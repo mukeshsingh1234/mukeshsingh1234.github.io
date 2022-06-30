@@ -191,6 +191,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
   navbarToggleSidebar();
   navActivePage();
 });
+
+function trackGetInTouch() {
+  console.log("button hit");
+  analytics.track("Get in touch button clicked")
+}
 </script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID 
