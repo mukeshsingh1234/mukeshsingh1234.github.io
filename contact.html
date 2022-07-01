@@ -202,19 +202,15 @@
                 </li>
               </ul>
               <h3>Follow me on social networks</h3>
-              <a href="https://www.linkedin.com/" title="" class="fa-icon">
+              <a href="https://www.linkedin.com/" title="" class="fa-icon" onclick="linkedinClicked()">
                 <i class="fa fa-linkedin"></i>
               </a>
-              <a href="https://twitter.com/" title="" class="fa-icon">
+              <a href="https://twitter.com/" title="" class="fa-icon" onclick="TwitterClicked">
                 <i class="fa fa-twitter"></i>
               </a>
-              <a href="https://dribbble.com/" title="" class="fa-icon">
+              <a href="https://dribbble.com/" title="" class="fa-icon" onclick="dribbbleClicked">
                 <i class="fa fa-dribbble"></i>
-              </a> 
-              <button onclick="linkedinClicked()">
-                <a href="https://www.linkedin.com/" class="btn btn-primary" title=""> 
-                  <i class="fa fa-linkedin"></i></a>
-              </button>       
+              </a>      
             </div>
           </div>
         </form>
@@ -233,6 +229,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 function linkedinClicked() {
   analytics.track("LinkedIn icon clicked.");
+
+}
+function TwitterClicked() {
+  analytics.track("Twitter icon clicked.");
+
+}
+function dribbbleClicked() {
+  analytics.track("Dribbble icon clicked.");
 
 }
 </script>
