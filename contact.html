@@ -211,6 +211,11 @@
               <a href="https://dribbble.com/" title="" class="fa-icon">
                 <i class="fa fa-dribbble"></i>
               </a>
+              <button onclick="linkedinClicked()">
+                <a href="https://www.linkedin.com/" class="btn btn-primary" title=""> 
+                  https://www.linkedin.com</a
+                >
+              </button>        
             </div>
           </div>
         </form>
@@ -226,6 +231,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
   navbarToggleSidebar();
   navActivePage();
 });
+
+function linkedinClicked() {
+  analytics.track("LinkedIn icon clicked.");
+
+}
 </script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID 
