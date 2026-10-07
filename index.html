@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mukesh Singh — Full Stack Developer | Software Engineer</title>
+<meta name="description" content="Mukesh Singh — Full Stack Developer and Software Engineer in Dehradun. Building responsive web applications with React, Node.js, REST APIs and databases.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#EFEBE2;
+    --ink-dim:#B7B2A6;
+    --bg:#0D0F15;
+    --bg-raised:#161923;
+    --line:#2A2E3A;
+    --amber:#E7A238;
+    --teal:#4FA79D;
+    --serif: 'Fraunces', serif;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;position:relative;}
+
+  #scene-canvas{
+    position:fixed; inset:0; z-index:0; width:100%; height:100%; display:block;
+  }
+  .scene-fade{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(180deg, rgba(13,15,21,0.15) 0%, rgba(13,15,21,0.55) 55%, var(--bg) 92%);
+  }
+
+  header{
+    position:relative; z-index:3;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:26px 0;
+  }
+  .logo{font-family:var(--serif); font-size:1.15rem; font-weight:500;}
+  nav{display:flex; gap:28px; font-size:0.92rem; color:var(--ink-dim);}
+  nav a{ position:relative; padding-bottom:3px; transition:color .25s ease; }
+  nav a::after{
+    content:''; position:absolute; left:0; bottom:0; width:100%; height:1px;
+    background:var(--amber); transform:scaleX(0); transform-origin:right;
+    transition:transform .32s ease;
+  }
+  nav a:hover{color:var(--amber);}
+  nav a:hover::after{ transform:scaleX(1); transform-origin:left; }
+
+  #cursor-glow{
+    position:fixed; top:0; left:0; width:460px; height:460px; z-index:2;
+    border-radius:50%; pointer-events:none; mix-blend-mode:screen;
+    background:radial-gradient(circle, rgba(231,162,56,0.16) 0%, rgba(231,162,56,0) 70%);
+    transform:translate(-50%,-50%); will-change:transform; opacity:0;
+    transition:opacity .4s ease;
+  }
+
+  .hero{
+    position:relative; z-index:3;
+    min-height:86vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding-top:10px;
+    pointer-events:none;
+  }
+  .hero a, .hero button{ pointer-events:auto; }
+  .eyebrow{
+    font-size:0.9rem; color:var(--teal); margin-bottom:18px;
+    opacity:0; transform:translateY(10px);
+    animation:rise 0.7s ease forwards 0.15s;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:clamp(2.3rem, 6vw, 4.4rem);
+    line-height:1.05;
+    max-width:15ch;
+    text-shadow: 0 2px 30px rgba(0,0,0,0.6);
+    opacity:0; transform:translateY(16px);
+    animation:rise 0.8s ease forwards 0.3s;
+  }
+  .hero p.lede{
+    margin-top:22px; max-width:52ch; color:var(--ink-dim); font-size:1.08rem;
+    opacity:0; transform:translateY(14px);
+    animation:rise 0.8s ease forwards 0.55s;
+  }
+  @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+
+  .hero-actions{
+    display:flex; gap:16px; margin-top:34px; flex-wrap:wrap;
+    opacity:0; transform:translateY(14px);
+    animation:rise 0.8s ease forwards 0.75s;
+  }
+  .btn{
+    padding:13px 24px; border-radius:2px; font-size:0.95rem; font-weight:500;
+    border:1px solid var(--line); transition:transform .25s ease, border-color .25s ease;
+    display:inline-block; backdrop-filter:blur(6px); background:rgba(13,15,21,0.35);
+  }
+  .btn:hover{ transform:translateY(-2px); border-color:var(--amber); }
+  .btn.solid{ background:var(--amber); color:#181405; border-color:var(--amber); }
+
+  .scroll-hint{
+    position:absolute; bottom:28px; left:0; font-size:0.78rem; color:var(--ink-dim);
+    opacity:0; animation:rise 0.8s ease forwards 1s;
+    display:flex; align-items:center; gap:8px;
+  }
+  .scroll-hint .line{ width:26px; height:1px; background:var(--ink-dim); }
+
+  section{ position:relative; z-index:3; padding:90px 0; }
+  .stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:34px 0; }
+  .stat{ display:flex; flex-direction:column; gap:6px; }
+  .stat-num{ font-family:var(--serif); font-size:2.2rem; color:var(--amber); }
+  .stat-label{ font-size:0.82rem; color:var(--ink-dim); }
+  @media(max-width:760px){ .stats-grid{ grid-template-columns:repeat(2,1fr); } }
+  .section-head{ display:flex; align-items:baseline; gap:18px; margin-bottom:44px; }
+  .section-head .num{ font-family:var(--serif); color:var(--ink-dim); font-size:0.95rem; }
+  .section-head h2{ font-family:var(--serif); font-weight:500; font-size:1.9rem; }
+  .divider{ height:1px; background:var(--line); flex:1; }
+
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  .about-grid{ display:grid; grid-template-columns: 1.2fr 1fr; gap:60px; }
+  .about-grid p{ color:var(--ink-dim); margin-bottom:16px; max-width:56ch; }
+  .skill-group{ margin-bottom:20px; }
+  .skill-group h4{ font-size:0.82rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--teal); margin-bottom:10px; font-weight:600; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ font-size:0.85rem; padding:6px 12px; border:1px solid var(--line); border-radius:2px; color:var(--ink-dim); background:rgba(255,255,255,0.02); }
+
+  .exp-item{ display:grid; grid-template-columns:160px 1fr; gap:28px; padding:26px 0; border-top:1px solid var(--line); }
+  .exp-item:last-child{ border-bottom:1px solid var(--line); }
+  .exp-year{ color:var(--ink-dim); font-size:0.9rem; }
+  .exp-role{ font-family:var(--serif); font-size:1.25rem; margin-bottom:6px; }
+  .exp-org{ color:var(--teal); font-size:0.95rem; margin-bottom:12px; }
+  .exp-item ul{ color:var(--ink-dim); font-size:0.95rem; padding-left:18px; }
+  .exp-item li{ margin-bottom:6px; }
+
+  /* 3D tilt project cards */
+  .projects{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; perspective:1200px; }
+  .project-card{
+    background:rgba(22,25,35,0.65); border:1px solid var(--line); border-radius:4px;
+    padding:34px; position:relative; overflow:hidden;
+    transform-style:preserve-3d; will-change:transform;
+    transition:transform .12s ease-out, box-shadow .3s ease, border-color .3s ease;
+    backdrop-filter:blur(4px);
+  }
+  .project-card:hover{ border-color:var(--amber); box-shadow:0 20px 50px -20px rgba(0,0,0,0.6); }
+  .project-card .pnum{ font-family:var(--serif); color:var(--ink-dim); font-size:0.85rem; transform:translateZ(20px); display:block; }
+  .project-card h3{ font-family:var(--serif); font-size:1.35rem; margin:14px 0 10px; transform:translateZ(35px); }
+  .project-card p{ color:var(--ink-dim); font-size:0.93rem; margin-bottom:18px; max-width:42ch; transform:translateZ(25px); }
+  .project-link{ font-size:0.88rem; color:var(--amber); display:inline-flex; align-items:center; gap:6px; border-bottom:1px solid transparent; transform:translateZ(30px); }
+  .project-card:hover .project-link{ border-bottom-color:var(--amber); }
+  .tag-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; transform:translateZ(20px); }
+  .tag-row span{ font-size:0.75rem; color:var(--ink-dim); border:1px solid var(--line); padding:3px 9px; border-radius:2px; }
+
+  .edu-item{ display:flex; justify-content:space-between; align-items:baseline; padding:18px 0; border-top:1px solid var(--line); color:var(--ink-dim); }
+  .edu-item:last-child{ border-bottom:1px solid var(--line); }
+  .edu-item strong{ color:var(--ink); font-weight:500; }
+
+  footer{ position:relative; z-index:3; padding:70px 0 50px; text-align:left; }
+  footer h2{ font-family:var(--serif); font-size:2.4rem; max-width:14ch; margin-bottom:24px; }
+  .contact-links{ display:flex; gap:24px; flex-wrap:wrap; color:var(--ink-dim); font-size:0.95rem; margin-bottom:40px; }
+  .contact-links a:hover{ color:var(--amber); }
+  .foot-bottom{ display:flex; justify-content:space-between; color:var(--ink-dim); font-size:0.82rem; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line); padding-top:22px; }
+
+  @media(max-width:760px){
+    .about-grid, .projects{ grid-template-columns:1fr; }
+    .exp-item{ grid-template-columns:1fr; }
+    nav{ display:none; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="scene-canvas"></canvas>
+<div class="scene-fade"></div>
+<div id="cursor-glow"></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">Mukesh Singh</div>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#experience">Experience</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Full Stack Developer · Dehradun, India</div>
+    <h1>I build fast, working websites — from first line to live URL.</h1>
+    <p class="lede">Full Stack Developer and Software Engineer building responsive web applications, REST APIs and business websites. Founder of Add Spark Digital, with 6+ applications shipped using React.js, Node.js, Express.js and modern databases.</p>
+    <div class="hero-actions">
+      <a class="btn solid" href="#work">See the work</a>
+      <a class="btn" href="mailto:ms3982802@gmail.com">Get in touch</a>
+      <a class="btn" href="Mukesh-Singh-Resume.pdf" download>Download CV</a>
+    </div>
+    <div class="scroll-hint"><div class="line"></div>move your mouse — scroll down</div>
+  </section>
+
+  <section class="stats-row reveal" style="padding-top:0;">
+    <div class="stats-grid">
+      <div class="stat"><span class="stat-num" data-target="6" data-suffix="+">0</span><span class="stat-label">Apps shipped</span></div>
+      <div class="stat"><span class="stat-num" data-target="4" data-suffix="+">0</span><span class="stat-label">Client websites</span></div>
+      <div class="stat"><span class="stat-num" data-target="2025" data-suffix="">0</span><span class="stat-label">Founded Add Spark</span></div>
+      <div class="stat"><span class="stat-num" data-target="2" data-suffix="">0</span><span class="stat-label">Core databases</span></div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head">
+      <span class="num">01</span>
+      <h2>Selected work</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="projects reveal">
+      <div class="project-card">
+        <span class="pnum">Live site</span>
+        <h3>Khetala Kumaon</h3>
+        <div class="tag-row"><span>WordPress</span><span>Responsive</span><span>SEO</span></div>
+        <p>Travel/tourism website for the Kumaon region — built and optimised for discovery and mobile visitors.</p>
+        <a class="project-link" href="https://khetalakumaon.in/" target="_blank" rel="noopener">khetalakumaon.in ↗</a>
+      </div>
+      <div class="project-card">
+        <span class="pnum">Live site</span>
+        <h3>Roopkund Outdoor</h3>
+        <div class="tag-row"><span>Custom Website</span><span>Booking form</span><span>Responsive UI</span></div>
+        <p>Custom-built adventure travel website with a focused booking and contact experience for trek and outdoor trip enquiries.</p>
+        <a class="project-link" href="https://roopkundoutdoor.com/" target="_blank" rel="noopener">roopkundoutdoor.com ↗</a>
+      </div>
+      <div class="project-card">
+        <span class="pnum">Live site</span>
+        <h3>Aadesh Live</h3>
+        <div class="tag-row"><span>CMS</span><span>Multi-page</span></div>
+        <p>Business website with custom content sections, built for clarity and easy client updates.</p>
+        <a class="project-link" href="https://aadeshlive.com/" target="_blank" rel="noopener">aadeshlive.com ↗</a>
+      </div>
+      <div class="project-card">
+        <span class="pnum">Live site</span>
+        <h3>The Mountain Mantra</h3>
+        <div class="tag-row"><span>WordPress</span><span>Landing pages</span></div>
+        <p>Mountain travel brand site with conversion-focused landing pages and CMS-driven content.</p>
+        <a class="project-link" href="https://themountainmantra.in/" target="_blank" rel="noopener">themountainmantra.in ↗</a>
+      </div>
+      <div class="project-card">
+        <span class="pnum">Live site</span>
+        <h3>Shri Shyam Hotels</h3>
+        <div class="tag-row"><span>WordPress</span><span>Responsive</span><span>Booking enquiry</span></div>
+        <p>Hotel website with room details, photo gallery and a simple enquiry flow, built to be fast and easy to use on mobile.</p>
+        <a class="project-link" href="https://shrishyamhotels.com/" target="_blank" rel="noopener">shrishyamhotels.com ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="section-head">
+      <span class="num">02</span>
+      <h2>Experience</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="reveal">
+      <div class="exp-item">
+        <div class="exp-year">2025 — Present</div>
+        <div>
+          <div class="exp-role">Founder &amp; Full Stack Developer</div>
+          <div class="exp-org">Add Spark Digital</div>
+          <ul>
+            <li>Designed, built and deployed 6+ full-stack apps with React.js, Node.js, Express.js, MongoDB and MySQL.</li>
+            <li>Built reusable React.js components and REST APIs with JWT auth and CRUD operations.</li>
+            <li>Owned the full lifecycle: requirements, design, build, testing, deployment and maintenance.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">May — July</div>
+        <div>
+          <div class="exp-role">Web Developer Intern</div>
+          <div class="exp-org">Tech Yard Lab</div>
+          <ul>
+            <li>Built and refined responsive web pages while learning practical web development workflows.</li>
+            <li>Worked with HTML, CSS and JavaScript, debugging layouts and improving user experience.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">February — April</div>
+        <div>
+          <div class="exp-role">Web Developer</div>
+          <div class="exp-org">Berg Technologies</div>
+          <ul>
+            <li>Worked on web development tasks and responsive website implementation.</li>
+            <li>Collaborated on debugging, layout improvements and day-to-day website updates.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head">
+      <span class="num">03</span>
+      <h2>About &amp; skills</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="about-grid reveal">
+      <div>
+        <p>I'm a full stack developer and software engineer based in Dehradun, currently pursuing a BCA at DD College. I like taking a project from an empty repo to a live URL — frontend, backend, database, deployment, all of it.</p>
+        <p>Most of my recent work has been responsive, SEO-conscious websites for travel and business clients, alongside React/Node applications with proper authentication and API design.</p>
+      </div>
+      <div>
+        <div class="skill-group">
+          <h4>Frontend</h4>
+          <div class="chips"><span class="chip">React.js</span><span class="chip">Redux Toolkit</span><span class="chip">Tailwind CSS</span><span class="chip">Bootstrap</span><span class="chip">Material UI</span><span class="chip">Responsive UI</span></div>
+        </div>
+        <div class="skill-group">
+          <h4>Backend &amp; APIs</h4>
+          <div class="chips"><span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">REST APIs</span><span class="chip">GraphQL</span><span class="chip">JWT Auth</span></div>
+        </div>
+        <div class="skill-group">
+          <h4>Programming</h4>
+          <div class="chips"><span class="chip">JavaScript ES6+</span><span class="chip">Python</span><span class="chip">Java</span><span class="chip">C / C++</span><span class="chip">SQL</span><span class="chip">HTML5</span><span class="chip">CSS3</span></div>
+        </div>
+        <div class="skill-group">
+          <h4>Programming, data &amp; tools</h4>
+          <div class="chips"><span class="chip">MongoDB</span><span class="chip">MySQL</span><span class="chip">Firebase Firestore</span><span class="chip">Git &amp; GitHub</span><span class="chip">Docker</span><span class="chip">Postman</span><span class="chip">WordPress</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">04</span>
+      <h2>Education</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="reveal">
+      <div class="edu-item"><span><strong>Bachelor of Computer Applications (BCA)</strong> — DD College</span><span>In progress</span></div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <h2>Let's build something.</h2>
+    <div class="contact-links">
+      <a href="mailto:ms3982802@gmail.com">ms3982802@gmail.com</a>
+      <a href="tel:+919235622016">+91 92356 22016</a>
+      <a href="https://github.com/mukeshsingh1234" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/mukesh-singh-556353375/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-bottom">
+      <span>Dehradun, Uttarakhand, India</span>
+      <span>© 2026 Mukesh Singh</span>
+    </div>
+  </footer>
+</div>
+
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+  const canvas = document.getElementById('scene-canvas');
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0D0F15, 0.045);
+
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(0, 3.2, 9);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  // low-poly wireframe mountain terrain
+  const segs = 46;
+  const size = 30;
+  const geo = new THREE.PlaneGeometry(size, size, segs, segs);
+  geo.rotateX(-Math.PI/2.15);
+  const pos = geo.attributes.position;
+  for(let i=0;i<pos.count;i++){
+    const x = pos.getX(i), z = pos.getZ(i);
+    const h = Math.sin(x*0.35)*1.1 + Math.cos(z*0.28)*1.3 + Math.sin((x+z)*0.18)*1.6;
+    pos.setY(i, h - 1.2);
+  }
+  geo.computeVertexNormals();
+
+  const wireMat = new THREE.MeshBasicMaterial({ color:0x2F5A54, wireframe:true, transparent:true, opacity:0.55 });
+  const terrain = new THREE.Mesh(geo, wireMat);
+  terrain.position.z = 2;
+  scene.add(terrain);
+
+  const wireMat2 = new THREE.MeshBasicMaterial({ color:0xE7A238, wireframe:true, transparent:true, opacity:0.18 });
+  const terrainBack = new THREE.Mesh(geo, wireMat2);
+  terrainBack.position.set(0, 2.4, -10);
+  terrainBack.scale.set(1.6,1.6,1.6);
+  scene.add(terrainBack);
+
+  // floating particles (stars)
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 300;
+  const starPos = new Float32Array(starCount*3);
+  for(let i=0;i<starCount;i++){
+    starPos[i*3] = (Math.random()-0.5)*40;
+    starPos[i*3+1] = Math.random()*14;
+    starPos[i*3+2] = (Math.random()-0.5)*40 - 5;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+  const starMat = new THREE.PointsMaterial({ color:0xEFEBE2, size:0.045, transparent:true, opacity:0.6 });
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e)=>{
+    mouseX = (e.clientX / window.innerWidth - 0.5);
+    mouseY = (e.clientY / window.innerHeight - 0.5);
+  });
+
+  window.addEventListener('resize', ()=>{
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  const clock = new THREE.Clock();
+  function animate(){
+    const t = clock.getElapsedTime();
+    terrain.rotation.y = t*0.02;
+    terrainBack.rotation.y = -t*0.015;
+    stars.rotation.y = t*0.01;
+
+    camera.position.x += (mouseX*2.5 - camera.position.x) * 0.03;
+    camera.position.y += (3.2 - mouseY*1.5 - camera.position.y) * 0.03;
+    camera.lookAt(0,0.5,0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // 3D tilt on project cards
+  document.querySelectorAll('.project-card').forEach(card=>{
+    card.addEventListener('mousemove', (e)=>{
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left)/r.width - 0.5;
+      const py = (e.clientY - r.top)/r.height - 0.5;
+      card.style.transform = `perspective(1200px) rotateX(${py*-8}deg) rotateY(${px*8}deg) translateZ(0)`;
+    });
+    card.addEventListener('mouseleave', ()=>{
+      card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0)';
+    });
+  });
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el=>io.observe(el));
+
+  // cursor glow follows mouse across the page
+  const glow = document.getElementById('cursor-glow');
+  window.addEventListener('mousemove', (e)=>{
+    glow.style.opacity = '1';
+    glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
+  });
+  window.addEventListener('mouseleave', ()=>{ glow.style.opacity = '0'; });
+
+  // animated count-up stats
+  const statEls = document.querySelectorAll('.stat-num');
+  const statIo = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        const el = en.target;
+        const target = parseInt(el.dataset.target, 10);
+        const suffix = el.dataset.suffix || '';
+        const duration = 1400;
+        const start = performance.now();
+        function tick(now){
+          const p = Math.min((now-start)/duration, 1);
+          const eased = 1 - Math.pow(1-p, 3);
+          el.textContent = Math.round(eased*target) + suffix;
+          if(p<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+        statIo.unobserve(el);
+      }
+    });
+  }, { threshold: 0.4 });
+  statEls.forEach(el=>statIo.observe(el));
+</script>
+</body>
+</html>
